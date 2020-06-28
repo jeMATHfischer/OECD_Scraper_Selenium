@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
+import time
 
 file_path = '/home/jens/Documents_Ubuntu/'
 
@@ -33,8 +34,9 @@ def tree_disolver(highest_level_names = begin):
         for name in highest_level_names:
             # replace html formating to python interpretable.
             name = name.replace("&nbsp;", "\u00a0")
-            single_path = '//li[contains(@class ,"t closed") and span[text()="{}"]]'.format(name)
-            parent_click = driver.find_elements_by_xpath(single_path)
+            single_path_closed = '//li[contains(@class ,"t closed") and span[text()="{}"]]'.format(name)
+            single_path_opened = '//li[contains(@class ,"t opened") and span[text()="{}"]]'.format(name)
+            parent_click = driver.find_elements_by_xpath(single_path_closed)
             if len(parent_click) == 1:
                 parent_click = parent_click[0]
                 parent_click.click()
@@ -42,14 +44,14 @@ def tree_disolver(highest_level_names = begin):
                 for item in parent_click:
                     if item.is_displayed():
                         item.click()
-            increase_depth = driver.find_elements_by_xpath(single_path + '/ul/li/span')
+            increase_depth = driver.find_elements_by_xpath(single_path_opened + '/ul/li/span')
             if name in [e.get_attribute("innerHTML") for e in increase_depth]:
                 # Difficulties arise if parent has child with same name parent_name.
                 # The branch parent_name - parent_name has to be evaluated taking two steps.
-                double_path = '//li[contains(@class ,"t opened") and span[text()="{}"]]/ul/li/span[text()="{}"]'.format(name, name)# '//li[contains(@class ,"t opened") and span[text()="{}"]]/ul/li/span[text()="{}"]/ul/li/span'.format(name, name)
+                parent_click = driver.find_elements_by_xpath(single_path_closed)
+                double_path = '//li[contains(@class ,"t closed") and span[text()="{}"]]/ul/li/span[text()="{}"]'.format(name, name)
                 double_increase_depth = driver.find_elements_by_xpath(double_path + '/ul/li/span')
                 tree_disolver([e.get_attribute("innerHTML") for e in double_increase_depth])
-                parent_click = driver.find_elements_by_xpath(double_path)
                 if len(parent_click) == 1:
                     parent_click = parent_click[0]
                     parent_click.click()
@@ -98,5 +100,8 @@ def download_clicker(download_section):
         except:
             print('Timeout while determining position of exit button.')
             
-tree_disolver(['Environment'])
-download_clicker('Green Growth')
+tree_disolver(['Demography and Population'])
+download_clicker('Africapolis')
+
+time.sleep(10)
+driver.quit()
