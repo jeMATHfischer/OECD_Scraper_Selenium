@@ -9,7 +9,7 @@ import time
 file_path = '/home/jens/Documents_Ubuntu/'
 
 options = Options()
-#options.add_argument('--headless')   #remove comment to let it run in the background
+options.add_argument('--headless')   #remove comment to let it run in the background
 profile = webdriver.FirefoxProfile()
 profile.set_preference('browser.download.folderList', 2) 
 profile.set_preference('browser.download.manager.showWhenStarting', False)
@@ -72,7 +72,8 @@ def download_clicker(download_section):
     
     -> Use only after tree_disolver.
     '''
-    ds_elements = driver.find_elements_by_xpath('//li[span[text() = "{}"]]//a[contains(@class ,"ds")]'.format(download_section))
+    ds_xpath = '//li[span[text() = "{}"]]//a[contains(@class ,"ds")]'.format(download_section)
+    ds_elements = driver.find_elements_by_xpath(ds_xpath)
     for e_ds in ds_elements:
         e_ds.click()
         try:
@@ -100,8 +101,8 @@ def download_clicker(download_section):
         except:
             print('Timeout while determining position of exit button.')
             
-tree_disolver(['Demography and Population'])
-download_clicker('Africapolis')
+tree_disolver(['Labour', 'Globalisation'])
+#download_clicker('Africapolis')
 
 time.sleep(10)
 driver.quit()
